@@ -21,48 +21,11 @@ body, ul, li, a {
     border-style: solid; 
     border-color: #f3e7eb;
     white-space: nowrap; 
-    
-}
-body {
-    padding-top: 70px; /* Adjust this based on navbar height */
-}
-
-.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    position: sticky;
+    top: 0px;
     z-index: 1000;
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 1rem 2.5rem; 
-    background-color: white; /* Ensure the navbar is visible */
-    border-bottom: 1px solid #f3e7eb;
+    background-color: white;
 }
-
-.navbar-brand a {
-    font-size: 1.125rem;
-    font-weight: 700; 
-    color: #1b0e12;
-}
-
-.navbar-nav {
-    display: flex;
-    gap: 2.5rem;
-}
-
-.nav-item a {
-    font-size: 0.875rem;
-    font-weight: 500; 
-    color: #1b0e12;
-}
-
-.navbar-icons {
-    display: flex; 
-    gap: 1rem; 
-}
-
 .navbar-brand a {
     font-size: 1.125rem;
     line-height: 1.75rem; 
@@ -433,25 +396,3 @@ ul{
 	color: #24262b;
 	background-color: #ffffff;
 }
-
-@media(max-width: 767px){
-  .footer-col{
-    width: 50%;
-    margin-bottom: 30px;
-}
-
-}
-@media(max-width: 574px){
-  .footer-col{
-    width: 100%;
-    
-}
-.navbar-brand{
-font-size: larger;
-}
-.nav-item{
-    font-size: xx-large;
-}
-
-}
-
