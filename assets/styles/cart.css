@@ -287,4 +287,6 @@
     line-height: 1.25;
     min-width: 18rem;
   }
-  
+  .inptext{
+    height: 100%;
+}

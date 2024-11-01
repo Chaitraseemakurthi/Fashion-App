@@ -205,3 +205,6 @@ body::-webkit-scrollbar {
 .size-item.selected {
     border: 2px solid black;
 }
+.inptext{
+    height: 100%;
+}

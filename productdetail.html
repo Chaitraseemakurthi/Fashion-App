@@ -80,8 +80,8 @@
                     <p id="productDescription"></p>
                     <p style="font-weight: 600;color: #8e8f8f;">Delivery in 2-7 days</p>
                     
-                    <h3>Select color</h3>
-    <div class="color-options">
+                    <!-- <h3>Select color</h3> -->
+    <!-- <div class="color-options">
       <div class="color-item">
         <div class="outer-circle"></div>
         <div class="inner-circle" style="background-color: rgb(57, 83, 180);"></div>
@@ -94,27 +94,27 @@
         <div class="outer-circle"></div>
         <div class="inner-circle" style="background-color: black;"></div>
       </div>
-    </div>
+    </div> -->
 
     <h3>Select size</h3>
     <div class="size-options">
-      <div class="size-item">
+      <div class="size-item" onclick="selectSize(element)" data-size="XS">
         <div class="inner-size-box"></div>
         <div class="size-text">XS</div>
       </div>
-      <div class="size-item">
+      <div class="size-item" onclick="selectSize(element)" data-size="S">
         <div class="inner-size-box"></div>
         <div class="size-text">S</div>
       </div>
-      <div class="size-item">
+      <div class="size-item" onclick="selectSize(element)" data-size="M">
         <div class="inner-size-box"></div>
         <div class="size-text">M</div>
       </div>
-      <div class="size-item">
+      <div class="size-item" onclick="selectSize(element)" data-size="L">
         <div class="inner-size-box"></div>
         <div class="size-text">L</div>
       </div>
-      <div class="size-item">
+      <div class="size-item" onclick="selectSize(element)" data-size="XL">
         <div class="inner-size-box"></div>
         <div class="size-text">XL</div>
       </div>
@@ -125,16 +125,10 @@
     </div>
       <input type="text" placeholder="pincode" style="border-right:none;border-left: none;border-top: none; padding: 10px;font-size: 18px;display: flex;">
     </div>
-  
-
-    
-                    <div id="addtocart"><p id="addtocart-text">ADD TO CART</p></div>
-                </div>
-            </div>
+    <div id="addtocart"><p id="addtocart-text">ADD TO CART</p></div>
+        </div>
+      </div>
           </div>
-          
-        
-
         </div>
     </div>
     <h2 class="category-head" style="margin-left:-20px ;">Recommended for You</h2>
@@ -244,14 +238,28 @@ function removefrmcart(item) {
     }
     localStorage.setItem('cart', JSON.stringify(reindexedcart));
 }
+function selectSize(element) {
+  // Clear previous selection
+  document.querySelectorAll('.size-item').forEach(item => item.classList.remove('selected'));
+  // Highlight selected size
+  element.classList.add('selected');
+  // Store the selected size
+  selectedSize = element.getAttribute('data-size');
+}
   function AddtoCart(){
-    if(addtocarttext.innerHTML=="ADD TO CART"){
-      addtocarttext.innerHTML="REMOVE ITEM";
-      addTocart(obj);
-    }else{
-      addtocarttext.innerHTML="ADD TO CART";
-      removefrmcart(obj);
-    }
+    const addtocarttext = document.getElementById("addtocart-text");
+  if (!selectedSize) {
+    alert("Please select a size before adding to cart.");
+    return;
+  }
+  
+  if (addtocarttext.innerHTML === "ADD TO CART") {
+    addtocarttext.innerHTML = "REMOVE ITEM";
+    addTocart(obj);
+  } else {
+    addtocarttext.innerHTML = "ADD TO CART";
+    removefrmcart(obj);
+  }
   }
   function Toggle1(){
           if (wishlist.style.color =="red") {

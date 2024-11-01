@@ -136,7 +136,7 @@
             <div class="p-4">
               <div class="priceinf">
                 <p class="pricetext">Subtotal</p>
-                <p class="priceinrupees">₹300</p>
+                <p class="priceinrupees" id="subtotal">₹0</p>
               </div>
               <div class="priceinf">
                 <p class="pricetext">Estimated Shipping</p>
@@ -148,7 +148,7 @@
               </div>
               <div class="priceinf">
                 <p class="pricetext">Total</p>
-                <p class="priceinrupees">₹300</p>
+                <p class="priceinrupees" id="total">₹0</p>
               </div>
             </div>
             <p class="rulestext">
@@ -191,62 +191,111 @@
     </div>
     <script>
         function renderProducts() {
-          const productsContainer = document.querySelector('.products-container');
-          productsContainer.innerHTML = '';
-        
-          const cart = JSON.parse(localStorage.getItem('cart'));
-          for (const key in cart) {
-            const productData = cart[key];
-            productData["cnt"]=1;
-            const productContainer = document.createElement('div');
-            productContainer.classList.add('product-container');
-        
-            productContainer.innerHTML = `
-              <div class="product-details">
-                  <div class="product-image" style='background-image: url("${productData.images[0].url}");'></div>
-                  <div class="product-info">
-                      <p class="product-name">${productData.name}</p>
-                      <p class="product-size">Size: ${productData.variantSizes[0].filterCode}</p>
-                  </div>
-              </div>
-              <div class="ctr">
-                  <div class="iconitem" onclick="updateCount('${key}', -1)">
-                            <img width="35" height="35" src="https://img.icons8.com/ios-glyphs/30/minus.png" alt="minus"/>
-                        </div>
-                  <div class="counttext" id="count-${key}">${productData.cnt}</div>
-                  <div class="iconitem" onclick="updateCount('${key}', 1)">
-                            <img width="35" height="35" src="https://img.icons8.com/ios-glyphs/30/plus--v1.png" alt="plus--v1"/>
-                        </div>
-              </div>
-              <div class="product-price">
-                  <p id="price-${key}" data-id=${productData.price.value}>${productData.cnt}x₹${productData.price.value}</p>
-              </div>
-            `;
-        
-            productsContainer.appendChild(productContainer);
-          }
+    const productsContainer = document.querySelector('.products-container');
+    productsContainer.innerHTML = '';
+
+    const cart = JSON.parse(localStorage.getItem('cart')) || {}; // Ensure cart is defined
+    let subtotal = 0;
+
+    for (const key in cart) {
+        const productData = cart[key];
+
+        // Set initial count if not already present
+        if (productData.cnt === undefined) {
+            productData.cnt = 1;
         }
 
-        function updateCount(itemKey, change) {
-          const countElement = document.getElementById(`count-${itemKey}`);
-          pricetext =document.getElementById(`price-${itemKey}`);
-          const unitPrice = parseFloat(pricetext.dataset.id); 
-          let count = parseInt(countElement.textContent);
-          count += change;
-          if (count <= 0) count = 0;
-          countElement.textContent = count;
-          pricetext.textContent = `${count}x₹${unitPrice}`;
-          const cart = JSON.parse(localStorage.getItem('cart'));
-          cart[itemKey].cnt = count;
-          if (count === 0) {
-            delete cart[itemKey];
-            localStorage.setItem('cart', JSON.stringify(cart));
-            renderProducts();
-          }
-        
-          localStorage.setItem('cart', JSON.stringify(cart));
+        // Set initial price if not already present
+        if (!productData.price || productData.price.value === undefined) {
+            productData.price = { value: 0 };
         }
-        renderProducts();
-        </script>
-  </body>
+
+        const productContainer = document.createElement('div');
+        productContainer.classList.add('product-container');
+
+        productContainer.innerHTML = `
+          <div class="product-details">
+              <div class="product-image" style='background-image: url("${productData.images[0].url}");'></div>
+              <div class="product-info">
+                  <p class="product-name">${productData.name}</p>
+                  <p class="product-size">Size: ${productData.variantSizes[0].filterCode}</p>
+              </div>
+          </div>
+          <div class="ctr">
+              <div class="iconitem" onclick="updateCount('${key}', -1)">
+                  <img width="35" height="35" src="https://img.icons8.com/ios-glyphs/30/minus.png" alt="minus"/>
+              </div>
+              <div class="counttext" id="count-${key}">${productData.cnt}</div>
+              <div class="iconitem" onclick="updateCount('${key}', 1)">
+                  <img width="35" height="35" src="https://img.icons8.com/ios-glyphs/30/plus--v1.png" alt="plus"/>
+              </div>
+          </div>
+          <div class="product-price">
+              <p id="price-${key}" data-id=${productData.price.value}>${productData.cnt} x ₹${productData.price.value}</p>
+          </div>
+        `;
+
+        productsContainer.appendChild(productContainer);
+        subtotal += productData.cnt * productData.price.value;
+    }
+
+    // Update subtotal and total display
+    document.getElementById('subtotal').textContent = `₹${subtotal}`;
+    document.getElementById('total').textContent = `₹${subtotal}`;
+}
+
+function updateCount(itemKey, change) {
+    const countElement = document.getElementById(`count-${itemKey}`);
+    const priceText = document.getElementById(`price-${itemKey}`);
+    const unitPrice = parseFloat(priceText.dataset.id);
+    let count = parseInt(countElement.textContent) || 1;
+
+    // Update count based on the change
+    count += change;
+    if (count < 0) count = 0;
+
+    // Update the display count and price
+    countElement.textContent = count;
+    priceText.textContent = `${count} x ₹${unitPrice}`;
+
+    // Update cart in localStorage
+    const cart = JSON.parse(localStorage.getItem('cart')) || {};
+    if (cart[itemKey]) {
+        cart[itemKey].cnt = count;
+    }
+
+    // Remove item if count is zero
+    if (count === 0) {
+        delete cart[itemKey];
+    }
+
+    // Save updated cart and refresh localStorage
+    localStorage.setItem('cart', JSON.stringify(cart));
+
+    // Re-render the cart and update subtotal
+    renderProducts();
+    calculateSubtotal();
+}
+
+// Function to calculate and display subtotal and total
+function calculateSubtotal() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || {};
+    let subtotal = 0;
+
+    for (const key in cart) {
+        const productData = cart[key];
+        const cnt = productData.cnt !== undefined ? productData.cnt : 1;
+        const priceValue = productData.price && productData.price.value !== undefined ? productData.price.value : 0;
+        subtotal += cnt * priceValue;
+    }
+
+    // Update subtotal and total in the order summary
+    document.getElementById('subtotal').textContent = `₹${subtotal}`;
+    document.getElementById('total').textContent = `₹${subtotal}`;
+}
+
+// Initial render
+renderProducts();
+</script>
+</body>
 </html>
